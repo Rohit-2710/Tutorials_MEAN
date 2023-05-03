@@ -1,16 +1,19 @@
 const mongoose = require("mongoose");
-const fileSchema = mongoose.Schema(
+const fileSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     author: { type: String, required: true },
     description: { type: String, required: true },
     published: { type: Boolean, required: true },
   },
-  { timestamp: true }
+  { timestamp: true },
+  {
+    toJSON: {
+      transform: (doc, ret) => {
+        (ret.id = ret._id), delete ret._id, delete ret.__v;
+      },
+    },
+  }
 );
-fileSchema.method("toJSON", () => {
-  const { _id, __v, ...object } = this.toObject();
-  object.id = _id;
-  return object;
-});
+
 module.exports = mongoose.model("Tutorials", fileSchema);
